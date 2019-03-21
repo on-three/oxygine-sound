@@ -34,20 +34,6 @@ set(SRC
 	src/sound/null/SoundHandleNull.h
 	)
 
-if(EMSCRIPTEN)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	set(SRC ${SRC}
-		src/sound/emscripten/SoundSystemEmscripten.h
-		src/sound/emscripten/SoundSystemEmscripten.cpp
-		src/sound/emscripten/SoundHandleEmscripten.h
-		src/sound/emscripten/SoundHandleEmscripten.cpp
-		src/sound/emscripten/SoundEmscripten.h
-		src/sound/emscripten/SoundEmscripten.cpp
-
-	)
-
-else(EMSCRIPTEN)
-
 	add_subdirectory(dependencies/tremor tremor)
 	
 	set (SRC ${SRC}
@@ -72,14 +58,15 @@ else(EMSCRIPTEN)
 		src/sound/oal/StaticStreamOAL.h
 		)
 
-endif(EMSCRIPTEN)
 
 
 add_library(oxygine-sound STATIC ${SRC})
 
 if(EMSCRIPTEN)
-	set(OXYGINESOUND_LIBS
-		oxygine-sound)	
+
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_OGG=1 -s USE_VORBIS=1" )
+
+	set(OXYGINESOUND_LIBS oxygine-sound -lopenal tremor -logg)
 
 	set(linkFlags "-Wno-warn-absolute-paths")
 
